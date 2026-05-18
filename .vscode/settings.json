@@ -1,0 +1,7 @@
+{
+  "chat.planAgent.defaultModel": "",
+  "inlineChat.defaultModel": "",
+  "chat.exploreAgent.defaultModel": "",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "notebook.defaultFormatter": "esbenp.prettier-vscode"
+}

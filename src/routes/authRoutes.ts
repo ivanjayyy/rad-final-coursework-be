@@ -1,5 +1,9 @@
-import Router from "express";
-import { loginUser, registerUser } from "../controller/authController";
+import { Router } from "express";
+import {
+  loginUser,
+  refreshToken,
+  registerUser,
+} from "../controller/authController";
 
 const authRoutes = Router();
 
@@ -8,5 +12,8 @@ authRoutes.post("/register", registerUser);
 
 // POST /api/v1/auth/login
 authRoutes.post("/login", loginUser);
+
+// POST /api/v1/auth/refresh
+authRoutes.post("/refresh", refreshToken);
 
 export default authRoutes;

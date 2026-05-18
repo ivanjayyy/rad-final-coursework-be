@@ -4,6 +4,7 @@ import { Document, model, Schema } from "mongoose";
 export enum UserRole {
   USER = "USER",
   ADMIN = "ADMIN",
+  MODERATOR = "MODERATOR",
 }
 
 // User interface
@@ -12,6 +13,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   roles: UserRole[];
+  approved: boolean;
 }
 
 // User schema
@@ -25,9 +27,9 @@ const userSchema = new Schema<IUser>(
       enum: Object.values(UserRole),
       default: [UserRole.USER],
     },
+    approved: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
 
-const UserModel = model<IUser>("User", userSchema);
-export default UserModel;
+export const UserModel = model<IUser>("User", userSchema);

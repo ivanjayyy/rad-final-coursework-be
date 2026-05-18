@@ -4,9 +4,11 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Environment variables
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string;
 
+// Generate access and refresh tokens
 export const signAccessToken = (user: IUser): string => {
   return jwt.sign(
     {
@@ -20,6 +22,7 @@ export const signAccessToken = (user: IUser): string => {
   );
 };
 
+// Generate refresh token
 export const signRefreshToken = (user: IUser): string => {
   return jwt.sign(
     {
