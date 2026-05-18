@@ -4,6 +4,7 @@ import { signAccessToken, signRefreshToken } from "../utils/tokens";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { AuthRequest } from "../middleware/auth";
 
 dotenv.config();
 
@@ -55,13 +56,13 @@ export const loginUser = async (req: Request, res: Response) => {
     // Find user by username
     const user = await UserModel.findOne({ username });
     if (!user) {
-      return res.status(400).json({ message: "Invalid username or password" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     // Check if the password is correct
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid username or password" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     // Generate access and refresh tokens
@@ -80,6 +81,27 @@ export const loginUser = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ message: "Error logging in user" });
   }
+};
+
+export const getMyDetails = async (req: AuthRequest, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const user = await UserModel.findById(req.user.sub).select("-password");
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  if (!user.approved) {
+    return res.status(403).json({ message: "User not approved" });
+  }
+
+  const { username, email, roles, _id } = user;
+
+  res
+    .status(200)
+    .json({ message: "ok", data: { id: _id, username, email, roles } });
 };
 
 // Refresh token
