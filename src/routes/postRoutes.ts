@@ -11,10 +11,11 @@ import {
   removeBookmark,
   updatePost,
 } from "../controller/postController";
+import { upload } from "../middleware/upload";
 
 const postRoutes = Router();
 
-postRoutes.post("/create", createPost);
+postRoutes.post("/create", upload.single("image"), createPost);
 
 postRoutes.get("/all", getAllPosts);
 

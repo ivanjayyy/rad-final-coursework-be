@@ -29,6 +29,7 @@ export const createPost = async (req: AuthRequest, res: Response) => {
       title,
       description,
       tags,
+      // author: req.user.sub,
       author: req.user.sub,
       imageURL,
     });
