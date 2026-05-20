@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
+import postRoutes from "./routes/postRoutes";
 
 dotenv.config();
 const app = express();
@@ -19,6 +20,7 @@ app.use(cors());
 // Routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/post", postRoutes);
 
 // Connect to MongoDB
 mongoose
