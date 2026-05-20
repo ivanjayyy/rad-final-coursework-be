@@ -22,6 +22,16 @@ export const deleteUser = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const getUserDetails = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.params.id;
+    const user = await UserModel.findById(userId);
+    res.status(200).json({ message: "User fetched successfully", data: user });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user" });
+  }
+};
+
 export const getAllUsers = async (req: AuthRequest, res: Response) => {
   try {
     const users = await UserModel.find({});
