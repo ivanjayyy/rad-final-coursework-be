@@ -4,7 +4,7 @@ export interface IPost extends Document {
   title: string;
   description: string;
   author: mongoose.Types.ObjectId;
-  imageURL?: string[];
+  imageURL?: string;
   tags?: string[];
   comments?: mongoose.Types.ObjectId[];
   bookmark?: mongoose.Types.ObjectId[];
@@ -21,7 +21,7 @@ const postSchema = new mongoose.Schema<IPost>(
       ref: "User",
       required: true,
     },
-    imageURL: [{ type: String }],
+    imageURL: { type: String },
     tags: [{ type: String }],
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
     bookmark: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
