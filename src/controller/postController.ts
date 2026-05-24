@@ -30,7 +30,7 @@ export const createPost = async (req: AuthRequest, res: Response) => {
       description,
       tags,
       // author: req.user.sub,
-      author: req.user.sub,
+      author: "6a09a80e7c54ca3ae0603f5b",
       imageURL,
     });
 

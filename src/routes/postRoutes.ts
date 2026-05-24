@@ -12,10 +12,11 @@ import {
   updatePost,
 } from "../controller/postController";
 import { upload } from "../middleware/upload";
+import { validateImage } from "../middleware/validate";
 
 const postRoutes = Router();
 
-postRoutes.post("/create", upload.single("image"), createPost);
+postRoutes.post("/create", upload.single("image"), validateImage, createPost);
 
 postRoutes.get("/all", getAllPosts);
 
