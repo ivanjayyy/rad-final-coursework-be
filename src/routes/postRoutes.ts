@@ -13,6 +13,7 @@ import {
 } from "../controller/postController";
 import { upload } from "../middleware/upload";
 import { validateImage } from "../middleware/validate";
+import { generateFlyer } from "../controller/flyerController";
 
 const postRoutes = Router();
 
@@ -21,6 +22,8 @@ postRoutes.post("/create", upload.single("image"), validateImage, createPost);
 postRoutes.get("/all", getAllPosts);
 
 postRoutes.get("/my", getMyPosts);
+
+postRoutes.get("/flyer/:id", generateFlyer);
 
 // postRoutes.get("/:id", getPostDetails);
 

@@ -70,9 +70,7 @@ export const getAllPosts = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getMyPosts = async (req: AuthRequest, res: Response) => {};
-
-export const getPostDetails = async (req: AuthRequest, res: Response) => {
+export const getMyPosts = async (req: AuthRequest, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -81,7 +79,7 @@ export const getPostDetails = async (req: AuthRequest, res: Response) => {
     const userId = req.user?.sub;
 
     if (!userId) {
-      return res.status(400).json({ message: "Post ID is required" });
+      return res.status(400).json({ message: "User ID not found" });
     }
 
     const query = { author: userId };
@@ -107,9 +105,37 @@ export const getPostDetails = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updatePost = async (req: AuthRequest, res: Response) => {};
+export const getPostDetails = async (req: AuthRequest, res: Response) => {
+  try {
+    const postId = req.params.id;
+    const post = await PostModel.findById(postId).populate("author", "username");
+    res.status(200).json({ message: "Post fetched successfully", data: post });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching post" });
+  }
+};
 
-export const deletePost = async (req: AuthRequest, res: Response) => {};
+export const updatePost = async (req: AuthRequest, res: Response) => {
+  try {
+    const postId = req.params.id;
+    const updatedPost = await PostModel.findByIdAndUpdate(postId, req.body, {
+      new: true,
+    });
+    res.status(200).json({ message: "Post updated successfully", data: updatedPost });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating post" });
+  }
+};
+
+export const deletePost = async (req: AuthRequest, res: Response) => {
+  try {
+    const postId = req.params.id;
+    const deletedPost = await PostModel.findByIdAndDelete(postId);
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting post" });
+  }
+};
 
 export const bookmarkPost = async (req: AuthRequest, res: Response) => {};
 
