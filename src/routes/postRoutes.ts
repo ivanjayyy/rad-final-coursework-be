@@ -14,22 +14,35 @@ import {
 import { upload } from "../middleware/upload";
 import { validateImage } from "../middleware/validate";
 import { generateFlyer } from "../controller/flyerController";
+import { authenticate } from "../middleware/auth";
 
 const postRoutes = Router();
 
-postRoutes.post("/create", upload.single("image"), validateImage, createPost);
+postRoutes.post(
+  "/create",
+  authenticate,
+  upload.single("image"),
+  validateImage,
+  createPost,
+);
 
-postRoutes.get("/all", getAllPosts);
+postRoutes.get("/all", authenticate, getAllPosts);
 
-postRoutes.get("/my", getMyPosts);
+postRoutes.get("/my", authenticate, getMyPosts);
 
-postRoutes.get("/flyer/:id", generateFlyer);
+postRoutes.get("/flyer/:id", authenticate, generateFlyer);
 
-// postRoutes.get("/:id", getPostDetails);
+postRoutes.get("/:id", authenticate, getPostDetails);
 
-// postRoutes.put("/update", updatePost);
+postRoutes.put(
+  "/update/:id",
+  authenticate,
+  upload.single("image"),
+  validateImage,
+  updatePost,
+);
 
-// postRoutes.delete("/delete", deletePost);
+postRoutes.delete("/delete/:id", authenticate, deletePost);
 
 // postRoutes.put("/bookmark", bookmarkPost);
 

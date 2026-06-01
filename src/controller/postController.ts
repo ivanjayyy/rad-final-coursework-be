@@ -4,7 +4,18 @@ import { AuthRequest } from "../middleware/auth";
 import { PostModel } from "../models/postModel";
 
 export const createPost = async (req: AuthRequest, res: Response) => {
-  const { title, description, tags } = req.body;
+  // const { title, description, tags } = req.body;
+  const {
+    status,
+    petName,
+    breed,
+    color,
+    lastSeenLocation,
+    lastSeenDate,
+    reward,
+    contactPhone,
+    contactEmail,
+  } = req.body;
 
   try {
     let imageURL = "";
@@ -26,12 +37,23 @@ export const createPost = async (req: AuthRequest, res: Response) => {
     }
 
     const newPost = new PostModel({
-      title,
-      description,
-      tags,
+      // title,
+      // description,
+      // tags,
       // author: req.user.sub,
-      author: "6a09a80e7c54ca3ae0603f5b",
+      // imageURL,
+
+      status,
+      petName,
+      breed,
+      color,
+      lastSeenLocation,
+      lastSeenDate,
+      reward,
+      contactPhone,
+      contactEmail,
       imageURL,
+      author: req.user.sub,
     });
 
     const savedPost = await newPost.save();
@@ -108,7 +130,10 @@ export const getMyPosts = async (req: AuthRequest, res: Response) => {
 export const getPostDetails = async (req: AuthRequest, res: Response) => {
   try {
     const postId = req.params.id;
-    const post = await PostModel.findById(postId).populate("author", "username");
+    const post = await PostModel.findById(postId).populate(
+      "author",
+      "username",
+    );
     res.status(200).json({ message: "Post fetched successfully", data: post });
   } catch (error) {
     res.status(500).json({ message: "Error fetching post" });
@@ -116,12 +141,58 @@ export const getPostDetails = async (req: AuthRequest, res: Response) => {
 };
 
 export const updatePost = async (req: AuthRequest, res: Response) => {
+  const {
+    petName,
+    breed,
+    color,
+    lastSeenLocation,
+    lastSeenDate,
+    reward,
+    contactPhone,
+    contactEmail,
+  } = req.body;
+
   try {
     const postId = req.params.id;
-    const updatedPost = await PostModel.findByIdAndUpdate(postId, req.body, {
-      new: true,
-    });
-    res.status(200).json({ message: "Post updated successfully", data: updatedPost });
+
+    let imageURL = "";
+    if (req.file) {
+      const result: any = await new Promise((resolve, reject) => {
+        const upload_stream = cloudinary.uploader.upload_stream(
+          { folder: "posts" },
+          (error: any, result: any) => {
+            if (error) {
+              return reject(error);
+            } else {
+              resolve(result);
+            }
+          },
+        );
+        upload_stream.end(req.file?.buffer);
+      });
+      imageURL = result.secure_url;
+    }
+
+    const updatedPost = await PostModel.findByIdAndUpdate(
+      postId,
+      {
+        petName,
+        breed,
+        color,
+        lastSeenLocation,
+        lastSeenDate,
+        reward,
+        contactPhone,
+        contactEmail,
+        imageURL,
+      },
+      {
+        new: true,
+      },
+    );
+    res
+      .status(200)
+      .json({ message: "Post updated successfully", data: updatedPost });
   } catch (error) {
     res.status(500).json({ message: "Error updating post" });
   }
