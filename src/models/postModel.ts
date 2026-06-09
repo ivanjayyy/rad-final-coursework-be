@@ -6,17 +6,8 @@ export enum PostStatus {
   FOUND = "FOUND",
 }
 
+// Post interface
 export interface IPost extends Document {
-  // title: string;
-  // description: string;
-  // author: mongoose.Types.ObjectId;
-  // imageURL?: string;
-  // tags?: string[];
-  // comments?: mongoose.Types.ObjectId[];
-  // bookmark?: mongoose.Types.ObjectId[];
-  // createdAt?: Date;
-  // updatedAt?: Date;
-
   status: PostStatus;
   petName: string;
   breed?: string;
@@ -33,20 +24,9 @@ export interface IPost extends Document {
   updatedAt?: Date;
 }
 
+// Post schema
 const postSchema = new mongoose.Schema<IPost>(
   {
-    // title: { type: String, required: true },
-    // description: { type: String, required: true },
-    // author: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "User",
-    //   required: true,
-    // },
-    // imageURL: { type: String },
-    // tags: [{ type: String }],
-    // comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
-    // bookmark: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-
     status: {
       type: String,
       enum: Object.values(PostStatus),

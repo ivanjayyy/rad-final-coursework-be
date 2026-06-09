@@ -3,8 +3,8 @@ import cloudinary from "../config/cloudinary";
 import { AuthRequest } from "../middleware/auth";
 import { PostModel } from "../models/postModel";
 
+// Create post
 export const createPost = async (req: AuthRequest, res: Response) => {
-  // const { title, description, tags } = req.body;
   const {
     status,
     petName,
@@ -18,6 +18,7 @@ export const createPost = async (req: AuthRequest, res: Response) => {
   } = req.body;
 
   try {
+    // Upload image
     let imageURL = "";
     if (req.file) {
       const result: any = await new Promise((resolve, reject) => {
@@ -37,12 +38,6 @@ export const createPost = async (req: AuthRequest, res: Response) => {
     }
 
     const newPost = new PostModel({
-      // title,
-      // description,
-      // tags,
-      // author: req.user.sub,
-      // imageURL,
-
       status,
       petName,
       breed,
@@ -54,19 +49,23 @@ export const createPost = async (req: AuthRequest, res: Response) => {
       contactEmail,
       imageURL,
       author: req.user.sub,
+      // author: '642f5c5d5c5d5c5c5c5c5c5c',
     });
 
+    // Save post
     const savedPost = await newPost.save();
     res
       .status(201)
       .json({ message: "Post created successfully", data: savedPost });
   } catch (error) {
-    res.status(500).json({ message: "Error creating post" });
+    res.status(500).json({ message: "Error creating post", error });
   }
 };
 
+// Get all posts
 export const getAllPosts = async (req: AuthRequest, res: Response) => {
   try {
+    // Pagination
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
@@ -92,8 +91,10 @@ export const getAllPosts = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Get my posts
 export const getMyPosts = async (req: AuthRequest, res: Response) => {
   try {
+    // Pagination
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
@@ -106,6 +107,7 @@ export const getMyPosts = async (req: AuthRequest, res: Response) => {
 
     const query = { author: userId };
 
+    // Fetch posts
     const [posts, totalPosts] = await Promise.all([
       PostModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
       PostModel.countDocuments(query),
@@ -127,9 +129,11 @@ export const getMyPosts = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Get post
 export const getPostDetails = async (req: AuthRequest, res: Response) => {
   try {
     const postId = req.params.id;
+    // populate author
     const post = await PostModel.findById(postId).populate(
       "author",
       "username",
@@ -140,6 +144,7 @@ export const getPostDetails = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Update post
 export const updatePost = async (req: AuthRequest, res: Response) => {
   const {
     petName,
@@ -155,6 +160,7 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
   try {
     const postId = req.params.id;
 
+    // Upload image
     let imageURL = "";
     if (req.file) {
       const result: any = await new Promise((resolve, reject) => {
@@ -194,10 +200,11 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
       .status(200)
       .json({ message: "Post updated successfully", data: updatedPost });
   } catch (error) {
-    res.status(500).json({ message: "Error updating post" });
+    res.status(500).json({ message: "Error updating post", error: error });
   }
 };
 
+// Delete post
 export const deletePost = async (req: AuthRequest, res: Response) => {
   try {
     const postId = req.params.id;

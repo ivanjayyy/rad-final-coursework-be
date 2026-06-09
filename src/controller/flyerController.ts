@@ -3,7 +3,6 @@ import { generatePetFlyer, FlyerData } from "../utils/flyerService";
 
 export async function generateFlyer(req: Request, res: Response) {
   try {
-    // In production, fetch this data from your DB using a petId parameter (e.g., req.params.id)
     const flyerMockData: FlyerData = {
       status: "LOST",
       petName: "Barnaby",
@@ -15,7 +14,7 @@ export async function generateFlyer(req: Request, res: Response) {
       contactPhone: "555-0199",
       contactEmail: "findbarnaby@example.com",
       imageUrl:
-        "https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=500&auto=format&fit=crop", // Substitute your actual public storage URL string
+        "https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=500&auto=format&fit=crop",
     };
 
     const pdfStream = await generatePetFlyer(flyerMockData);

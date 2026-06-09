@@ -8,8 +8,10 @@ export const requireRole = (roles: UserRole[]) => {
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+
     // Check if the user has the required role
     const hasRole = roles.some((role) => req.user.roles?.includes(role));
+    
     if (!hasRole) {
       return res.status(403).json({ message: "Forbidden" });
     }

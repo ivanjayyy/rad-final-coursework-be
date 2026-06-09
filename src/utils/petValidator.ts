@@ -4,7 +4,7 @@ import { GoogleGenAI, Type, Schema } from "@google/genai";
 // It automatically picks up the GOOGLE_API_KEY environment variable.
 const ai = new GoogleGenAI({});
 
-// 1. Define the TypeScript interface for our expected output
+// Interface for the validation result
 export interface ImageValidationResult {
   isRealAnimal: boolean;
   isOffensiveOrInappropriate: boolean;
@@ -12,7 +12,7 @@ export interface ImageValidationResult {
   reasoning: string;
 }
 
-// 2. Define the JSON Schema so Gemini strictly adheres to our structure
+// Schema for the validation result
 const validationSchema: Schema = {
   type: Type.OBJECT,
   properties: {
@@ -44,11 +44,7 @@ const validationSchema: Schema = {
   ],
 };
 
-/**
- * Validates a pet photo before hitting your app controller.
- * @param imageBuffer The file buffer (e.g., from multer or express-fileupload)
- * @param mimeType The file's mime type (e.g., 'image/jpeg', 'image/png')
- */
+// Function to validate the image
 export async function validatePetImage(
   imageBuffer: Buffer,
   mimeType: string,

@@ -18,6 +18,7 @@ import { authenticate } from "../middleware/auth";
 
 const postRoutes = Router();
 
+// POST /api/v1/post/create
 postRoutes.post(
   "/create",
   authenticate,
@@ -26,14 +27,19 @@ postRoutes.post(
   createPost,
 );
 
+// GET /api/v1/post/all
 postRoutes.get("/all", authenticate, getAllPosts);
 
+// GET /api/v1/post/my
 postRoutes.get("/my", authenticate, getMyPosts);
 
+// POST /api/v1/post/flyer
 postRoutes.get("/flyer/:id", authenticate, generateFlyer);
 
+// GET /api/v1/post/:id
 postRoutes.get("/:id", authenticate, getPostDetails);
 
+// POST /api/v1/post/update
 postRoutes.put(
   "/update/:id",
   authenticate,
@@ -42,6 +48,7 @@ postRoutes.put(
   updatePost,
 );
 
+// POST /api/v1/post/delete
 postRoutes.delete("/delete/:id", authenticate, deletePost);
 
 // postRoutes.put("/bookmark", bookmarkPost);

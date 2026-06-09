@@ -2,6 +2,7 @@ import { Response } from "express";
 import { UserModel } from "../models/userModel";
 import { AuthRequest } from "../middleware/auth";
 
+// Update user
 export const updateUser = async (req: AuthRequest, res: Response) => {
   try {
     const user = await UserModel.findByIdAndUpdate(req.user.sub, req.body, {
@@ -13,6 +14,7 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Delete user
 export const deleteUser = async (req: AuthRequest, res: Response) => {
   try {
     const user = await UserModel.findByIdAndDelete(req.user.sub);
@@ -22,6 +24,7 @@ export const deleteUser = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Get user
 export const getUserDetails = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.params.id;
@@ -32,6 +35,7 @@ export const getUserDetails = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Get all users
 export const getAllUsers = async (req: AuthRequest, res: Response) => {
   try {
     const users = await UserModel.find({});

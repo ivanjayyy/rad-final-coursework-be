@@ -83,10 +83,12 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 };
 
+// Get my details
 export const getMyDetails = async (req: AuthRequest, res: Response) => {
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
+  // Password is not needed
   const user = await UserModel.findById(req.user.sub).select("-password");
 
   if (!user) {

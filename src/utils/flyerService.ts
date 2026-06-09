@@ -2,6 +2,7 @@ import PDFDocument from "pdfkit";
 import axios from "axios";
 import { PassThrough } from "stream";
 
+// Flyer data interface
 export interface FlyerData {
   status: "LOST" | "FOUND";
   petName: string;
@@ -12,13 +13,10 @@ export interface FlyerData {
   reward?: string;
   contactPhone: string;
   contactEmail: string;
-  imageUrl: string; // URL from S3 / Cloudinary / Firebase
+  imageUrl: string; 
 }
 
-/**
- * Generates a high-quality PDF flyer as a stream
- * @param data FlyerData containing pet description and contact details
- */
+// Generate a printable PDF flyer
 export async function generatePetFlyer(data: FlyerData): Promise<PassThrough> {
   // Create an A4 or Letter document with standard margins
   const doc = new PDFDocument({ size: "LETTER", margin: 36 });
@@ -26,7 +24,7 @@ export async function generatePetFlyer(data: FlyerData): Promise<PassThrough> {
   doc.pipe(stream);
 
   try {
-    // 1. Fetch the pet image as an arraybuffer
+    // Fetch the pet image as an arraybuffer
     let imageBuffer: Buffer | null = null;
 
     try {
@@ -41,11 +39,11 @@ export async function generatePetFlyer(data: FlyerData): Promise<PassThrough> {
       );
     }
 
-    // --- DESIGN CONSTANTS ---
+    // Design constants
     const pageWidth = 612; // Letter width in points
     const accentColor = data.status === "LOST" ? "#D32F2F" : "#1976D2"; // Red for Lost, Blue for Found
 
-    // 2. HEADER BLOCK
+    // Header section
     doc.rect(0, 0, pageWidth, 110).fill(accentColor);
 
     doc
@@ -54,7 +52,7 @@ export async function generatePetFlyer(data: FlyerData): Promise<PassThrough> {
       .font("Helvetica-Bold")
       .text(`${data.status} PET`, 0, 30, { align: "center", width: pageWidth });
 
-    // 3. PET NAME
+    // Pet name
     doc
       .fillColor("#212121")
       .fontSize(36)
@@ -64,7 +62,7 @@ export async function generatePetFlyer(data: FlyerData): Promise<PassThrough> {
         width: pageWidth - 72,
       });
 
-    // 4. MAIN IMAGE CONTAINER
+    // Main image section
     // Centers a 280x280pt image on the canvas
     const imgWidth = 280;
     const imgHeight = 280;
@@ -103,7 +101,7 @@ export async function generatePetFlyer(data: FlyerData): Promise<PassThrough> {
         );
     }
 
-    // 5. DESCRIPTION DETAILS SECTION
+    // Details section
     let detailsY = 480;
     doc
       .fillColor("#212121")
@@ -153,7 +151,7 @@ export async function generatePetFlyer(data: FlyerData): Promise<PassThrough> {
       currentY += 22;
     });
 
-    // 6. CONTACT FOOTER BANNER
+    // Contact section
     const footerY = 670;
     doc
       .rect(36, footerY, pageWidth - 72, 80)
