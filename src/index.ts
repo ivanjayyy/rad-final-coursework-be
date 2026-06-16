@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import postRoutes from "./routes/postRoutes";
+import mailRoutes from "./routes/mailRoutes";
+import adminRoutes from "./routes/adminRoutes"
 
 dotenv.config();
 const app = express();
@@ -21,6 +23,8 @@ app.use(cors());
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/post", postRoutes);
+app.use("/api/v1/mail", mailRoutes);
+app.use("/api/v1/admin", adminRoutes)
 
 // Connect to MongoDB
 mongoose

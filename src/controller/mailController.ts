@@ -1,0 +1,44 @@
+import { Request, Response } from "express";
+import { createAndSendOtp, verifyOtp } from "../utils/otpService";
+
+// POST /api/otp/send
+// Body: { email: string }
+export const sendOtp = async (req: Request, res: Response): Promise<void> => {
+  const { email } = req.body;
+
+  if (!email || typeof email !== "string") {
+    res.status(400).json({ message: "A valid email address is required." });
+    return;
+  }
+
+  try {
+    await createAndSendOtp(email.trim().toLowerCase());
+    res.status(200).json({ message: "OTP sent successfully." });
+  } catch (error) {
+    console.error("sendOtp error:", error);
+    res.status(500).json({ message: "Failed to send OTP. Please try again." });
+  }
+};
+
+// POST /api/otp/verify
+// Body: { email: string; otp: string }
+export const verifyOtpController = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    res.status(400).json({ message: "Email and OTP are required." });
+    return;
+  }
+
+  const result = verifyOtp(email.trim().toLowerCase(), otp.toString().trim());
+
+  if (!result.success) {
+    res.status(400).json({ message: result.message });
+    return;
+  }
+
+  res.status(200).json({ message: result.message });
+};
