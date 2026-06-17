@@ -2,6 +2,7 @@ import { Response } from "express";
 import cloudinary from "../config/cloudinary";
 import { AuthRequest } from "../middleware/auth";
 import { PostModel } from "../models/postModel";
+import { BookmarkModel } from "../models/boomarkModel";
 
 // Create post
 export const createPost = async (req: AuthRequest, res: Response) => {
@@ -215,9 +216,105 @@ export const deletePost = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const bookmarkPost = async (req: AuthRequest, res: Response) => {};
+export const bookmarkPost = async (req: AuthRequest, res: Response) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.user?.sub;
 
-export const removeBookmark = async (req: AuthRequest, res: Response) => {};
+    if (!userId) {
+      return res.status(400).json({ message: "User ID not found" });
+    }
+
+    // Add userId to post's bookmarks array
+    const post = await PostModel.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    post.bookmark?.push(userId);
+    await post.save();
+
+    // Add to BookmarkModel
+    const bookmark = new BookmarkModel({
+      post: postId,
+      user: userId,
+    });
+    await bookmark.save();
+
+    res.status(200).json({ message: "Post bookmarked successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error bookmarking post" });
+  }
+};
+
+export const removeBookmark = async (req: AuthRequest, res: Response) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.user?.sub;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID not found" });
+    }
+
+    // Remove userId from post's bookmarks array
+    const post = await PostModel.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    await BookmarkModel.deleteOne({ post: postId, user: userId });
+
+    // type ObjectId[]
+    post.bookmark = post.bookmark?.filter((id) => id.toString() !== userId);
+    await post.save();
+
+    // Remove from BookmarkModel
+
+    res.status(200).json({ message: "Post bookmark removed successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error removing bookmark" });
+  }
+};
+
+export const getBookmarkPosts = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.sub;
+
+    // Pagination
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    const bookmarks = await BookmarkModel.find({ user: userId });
+
+    const [posts, totalPosts] = await Promise.all([
+      PostModel.find({
+        _id: { $in: bookmarks.map((bookmark) => bookmark.post) },
+      })
+        .skip(skip)
+        .limit(limit)
+        .populate("author", "username"),
+      PostModel.countDocuments({
+        _id: { $in: bookmarks.map((bookmark) => bookmark.post) },
+      }),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "Bookmark posts fetched successfully",
+      data: posts,
+      pagination: {
+        currentPage: page,
+        totalPosts: totalPosts,
+        totalPages: Math.ceil(totalPosts / limit),
+        limit,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching bookmark posts" });
+    console.log(error);
+  }
+};
 
 export const commentPost = async (req: AuthRequest, res: Response) => {};
 

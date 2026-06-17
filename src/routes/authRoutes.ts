@@ -4,6 +4,7 @@ import {
   loginUser,
   refreshToken,
   registerUser,
+  resetPassword,
 } from "../controller/authController";
 import { authenticate } from "../middleware/auth";
 
@@ -20,5 +21,7 @@ authRoutes.get("/me", authenticate, getMyDetails);
 
 // POST /api/v1/auth/refresh
 authRoutes.post("/refresh", refreshToken);
+
+authRoutes.post("/reset-password", resetPassword);
 
 export default authRoutes;

@@ -9,6 +9,7 @@ import {
   getMyPosts,
   getPostDetails,
   removeBookmark,
+  getBookmarkPosts,
   updatePost,
 } from "../controller/postController";
 import { upload } from "../middleware/upload";
@@ -36,6 +37,8 @@ postRoutes.get("/my", authenticate, getMyPosts);
 // POST /api/v1/post/flyer
 postRoutes.get("/flyer/:id", authenticate, generateFlyer);
 
+postRoutes.get("/bookmark-posts", authenticate, getBookmarkPosts);
+
 // GET /api/v1/post/:id
 postRoutes.get("/:id", authenticate, getPostDetails);
 
@@ -51,9 +54,9 @@ postRoutes.put(
 // POST /api/v1/post/delete
 postRoutes.delete("/delete/:id", authenticate, deletePost);
 
-// postRoutes.put("/bookmark", bookmarkPost);
+postRoutes.put("/bookmark/:id", authenticate, bookmarkPost);
 
-// postRoutes.put("/unbookmark", removeBookmark);
+postRoutes.put("/unbookmark/:id", authenticate, removeBookmark);
 
 // postRoutes.put("/comment", commentPost);
 

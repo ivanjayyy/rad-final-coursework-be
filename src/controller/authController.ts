@@ -137,3 +137,20 @@ export const refreshToken = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error refreshing token" });
   }
 };
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    // TODO: implement password reset logic
+    const { email, otp, newPassword } = req.body; 
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: "Email, OTP, and new password are required" });
+    }
+
+    
+
+    res.status(200).json({ message: "Password reset successful" });
+  } catch (error) {
+    res.status(500).json({ message: "Error resetting password" });
+  }
+};
