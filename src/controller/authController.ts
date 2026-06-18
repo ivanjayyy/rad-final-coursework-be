@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { AuthRequest } from "../middleware/auth";
 import { verifyOtp } from "../utils/otpService";
+import { sendWelcomeEmail } from "../utils/emailService";
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
     // Save user to database
     await newUser.save();
+    await sendWelcomeEmail(email, username);
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
@@ -102,9 +104,10 @@ export const getMyDetails = async (req: AuthRequest, res: Response) => {
 
   const { username, email, roles, _id, profilePic } = user;
 
-  res
-    .status(200)
-    .json({ message: "ok", data: { id: _id, username, email, roles, profilePic } });
+  res.status(200).json({
+    message: "ok",
+    data: { id: _id, username, email, roles, profilePic },
+  });
 };
 
 // Refresh token
@@ -142,10 +145,12 @@ export const refreshToken = async (req: Request, res: Response) => {
 export const resetPassword = async (req: Request, res: Response) => {
   try {
     // TODO: implement password reset logic
-    const { email, otp, newPassword } = req.body; 
+    const { email, otp, newPassword } = req.body;
 
     if (!email || !otp || !newPassword) {
-      return res.status(400).json({ message: "Email, OTP, and new password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email, OTP, and new password are required" });
     }
 
     const result = verifyOtp(email.trim().toLowerCase(), otp.toString().trim());

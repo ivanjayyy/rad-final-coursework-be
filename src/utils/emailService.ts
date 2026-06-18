@@ -8,6 +8,70 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+export const sendEmailToUser = async (
+  to: string,
+  subject: string,
+  body: string,
+): Promise<void> => {
+  await transporter.sendMail({
+    from: `"💥 PawLink HQ 💥" <${process.env.EMAIL_USER}>`,
+    to,
+    subject,
+    html: body,
+  });
+};
+
+export const sendWelcomeEmail = async (
+  to: string,
+  username: string,
+): Promise<void> => {
+  await transporter.sendMail({
+    from: `"💥 PawLink HQ 💥" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "💥 WELCOME TO THE COBALT ALLIANCE, AGENT! 💥",
+    html: `
+      <div style="font-family: 'Courier New', Courier, monospace, sans-serif; max-width: 480px; margin: 30px auto; padding: 36px 32px; background-color: #c084fc; border: 5px solid #000000; box-shadow: 12px 12px 0px 0px #000000, 16px 16px 20px rgba(0,0,0,0.15); border-radius: 4px;">
+        
+        <div style="background-color: #fef08a; border: 4px solid #000000; padding: 18px; margin-bottom: 32px; text-align: center; box-shadow: 4px 4px 0px #000000, 8px 8px 0px #000000; transform: rotate(-1deg); -webkit-transform: rotate(-1deg); -moz-transform: rotate(-1deg);">
+          <h2 style="color: #000000; margin: 0; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; text-shadow: 2px 2px 0px #ffffff, 4px 4px 0px rgba(0,0,0,0.15);">
+            💥 INITIALIZED! 💥
+          </h2>
+        </div>
+
+        <div style="background-color: #22d3ee; border: 3px solid #000000; padding: 8px 16px; display: inline-block; margin-bottom: 24px; box-shadow: 4px 4px 0px #000000; transform: rotate(1.5deg); -webkit-transform: rotate(1.5deg); -moz-transform: rotate(1.5deg);">
+          <span style="color: #000000; font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
+            📡 CODENAME: @${username || "NEW_AGENT"}
+          </span>
+        </div>
+
+        <div style="background-color: #ffffff; border: 3px solid #000000; padding: 20px; margin-bottom: 32px; box-shadow: 6px 6px 0px #000000;">
+          <h3 style="color: #000000; margin: 0 0 12px 0; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">
+            ⚡ REGISTRATION TERMINAL ONLINE
+          </h3>
+          <p style="color: #000000; margin: 0; font-size: 13px; font-weight: 800; line-height: 1.6; text-transform: uppercase;">
+            YOUR ACCOUNT ARCHIVE IS NOW FULLY PROVISIONED INTO THE CENTRAL DATABASE GRID. CORE SYSTEMS ARE ENGAGED AND STANDING BY FOR RECONNAISSANCE.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 36px; transform: scale(1.02); -webkit-transform: scale(1.02); -moz-transform: scale(1.02);">
+          <a href="${process.env.FRONTEND_URL || "http://localhost:5173"}" style="text-decoration: none; display: inline-block;">
+            <span style="font-family: 'Courier New', Courier, monospace; font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #ffffff; background-color: #000000; padding: 14px 28px; border: 3px solid #ffffff; box-shadow: 4px 4px 0px #22d3ee, 8px 8px 0px #000000; transition: all 0.2s;">
+              ENTER MAINFRAME 🚀
+            </span>
+          </a>
+        </div>
+
+        <div style="border-top: 4px dashed #000000; padding-top: 20px; text-align: center;">
+          <p style="color: #000000; font-size: 11px; font-weight: 900; margin: 0; text-transform: uppercase; background-color: rgba(255,255,255,0.4); padding: 8px; border: 2px dashed #000000;">
+            * ACCESS PROTOCOL GRANTED BY PAWLINK HQ HIGHER CLEARANCE AUTHORITIES. *
+          </p>
+        </div>
+
+      </div>
+    `,
+  });
+};
+
 export const sendOtpEmail = async (to: string, otp: string): Promise<void> => {
   await transporter.sendMail({
     from: `"💥 PawLink HQ 💥" <${process.env.EMAIL_USER}>`,

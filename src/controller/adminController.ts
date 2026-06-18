@@ -2,6 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "../middleware/auth";
 import { UserModel, UserRole } from "../models/userModel";
 import { PostModel } from "../models/postModel";
+import { sendEmailToUser } from "../utils/emailService";
 
 export const getDashboardStats = async (req: AuthRequest, res: Response) => {
   try {
@@ -126,10 +127,9 @@ export const changeRole = async (req: AuthRequest, res: Response) => {
 
 export const sendEmail = async (req: AuthRequest, res: Response) => {
   try {
-    const user = await UserModel.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const { email, subject, body } = req.body;
+    await sendEmailToUser(email, subject, body);
+
     res.status(200).json({ message: "Email sent successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error sending email" });
