@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createAndSendOtp, verifyOtp } from "../utils/otpService";
+import { createAndSendOtp, peekOtp, verifyOtp } from "../utils/otpService";
 
 // POST /api/otp/send
 // Body: { email: string }
@@ -33,12 +33,12 @@ export const verifyOtpController = async (
     return;
   }
 
-  const result = verifyOtp(email.trim().toLowerCase(), otp.toString().trim());
+  const result = peekOtp(email.trim().toLowerCase(), otp.toString().trim());
 
-  if (!result.success) {
-    res.status(400).json({ message: result.message });
+  if (!result) {
+    res.status(400).json({ message: "Invalid email or OTP." });
     return;
   }
 
-  res.status(200).json({ message: result.message });
+  res.status(200).json({ message: "OTP verified successfully." });
 };

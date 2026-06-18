@@ -1,24 +1,38 @@
 import { Router } from "express";
 import { authenticate } from "../middleware/auth";
 import {
-  deleteUser,
-  getAllUsers,
+  deleteAccount,
   updateUser,
-  getUserDetails,
+  updateProfilePic,
 } from "../controller/userController";
+import { upload } from "../middleware/upload";
+import { requireRole } from "../middleware/role";
+import { UserRole } from "../models/userModel";
 
 const userRoutes = Router();
 
 // POST /api/v1/user/update
-userRoutes.put("/update", authenticate, updateUser);
+userRoutes.put(
+  "/update",
+  authenticate,
+  requireRole([UserRole.USER, UserRole.MODERATOR]),
+  updateUser,
+);
 
 // POST /api/v1/user/delete
-userRoutes.delete("/delete", authenticate, deleteUser);
+userRoutes.delete(
+  "/delete",
+  authenticate,
+  requireRole([UserRole.USER, UserRole.MODERATOR]),
+  deleteAccount,
+);
 
-// GET /api/v1/user/me
-userRoutes.get("/:id", authenticate, getUserDetails);
-
-// GET /api/v1/user/all
-userRoutes.get("/all", authenticate, getAllUsers);
+userRoutes.put(
+  "/profile-pic",
+  authenticate,
+  requireRole([UserRole.USER, UserRole.MODERATOR]),
+  upload.single("image"),
+  updateProfilePic,
+);
 
 export default userRoutes;

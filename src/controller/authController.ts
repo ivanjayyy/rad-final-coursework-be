@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { AuthRequest } from "../middleware/auth";
+import { verifyOtp } from "../utils/otpService";
 
 dotenv.config();
 
@@ -99,11 +100,11 @@ export const getMyDetails = async (req: AuthRequest, res: Response) => {
     return res.status(403).json({ message: "User not approved" });
   }
 
-  const { username, email, roles, _id } = user;
+  const { username, email, roles, _id, profilePic } = user;
 
   res
     .status(200)
-    .json({ message: "ok", data: { id: _id, username, email, roles } });
+    .json({ message: "ok", data: { id: _id, username, email, roles, profilePic } });
 };
 
 // Refresh token
@@ -147,7 +148,23 @@ export const resetPassword = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Email, OTP, and new password are required" });
     }
 
-    
+    const result = verifyOtp(email.trim().toLowerCase(), otp.toString().trim());
+
+    if (!result.success) {
+      return res.status(400).json({ message: result.message });
+    }
+
+    const user = await UserModel.findOne({ email: email.trim().toLowerCase() });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const salt = await bcrypt.genSaltSync(10);
+    const hashedPassword = await bcrypt.hashSync(newPassword, salt);
+
+    user.password = hashedPassword;
+    await user.save();
 
     res.status(200).json({ message: "Password reset successful" });
   } catch (error) {

@@ -2,7 +2,7 @@ import PDFDocument from "pdfkit";
 import axios from "axios";
 import { PassThrough } from "stream";
 
-// Flyer data interface
+// Flyer data interface - Updated to support strings or arrays of strings
 export interface FlyerData {
   status: "LOST" | "FOUND";
   petName: string;
@@ -11,20 +11,27 @@ export interface FlyerData {
   lastSeenLocation: string;
   lastSeenDate: string;
   reward?: string;
-  contactPhone: string;
-  contactEmail: string;
-  imageUrl: string; 
+  contactPhone: string | string[]; // Can now handle multiple entries
+  contactEmail: string | string[]; // Can now handle multiple entries
+  imageUrl: string;
 }
 
-// Generate a printable PDF flyer
+// Helper to normalize data into a clean, uniform array of strings
+const normalizeContactData = (
+  field: string | string[] | undefined,
+): string[] => {
+  if (!field) return [];
+  if (Array.isArray(field)) return field.filter(Boolean);
+  return field.split(/[\s,;|]+/).filter(Boolean); // Handles fallback string splitting if comma/space separated
+};
+
+// Generate a printable comic-styled PDF flyer
 export async function generatePetFlyer(data: FlyerData): Promise<PassThrough> {
-  // Create an A4 or Letter document with standard margins
   const doc = new PDFDocument({ size: "LETTER", margin: 36 });
   const stream = new PassThrough();
   doc.pipe(stream);
 
   try {
-    // Fetch the pet image as an arraybuffer
     let imageBuffer: Buffer | null = null;
 
     try {
@@ -35,150 +42,247 @@ export async function generatePetFlyer(data: FlyerData): Promise<PassThrough> {
       imageBuffer = Buffer.from(imageResponse.data);
     } catch (imgError) {
       console.warn(
-        `Warning: Could not download image from ${data.imageUrl}. Defaulting to layout placeholder text.`,
+        `Warning: Could not download image from ${data.imageUrl}. Defaulting to comic layout placeholder text.`,
       );
     }
 
-    // Design constants
-    const pageWidth = 612; // Letter width in points
-    const accentColor = data.status === "LOST" ? "#D32F2F" : "#1976D2"; // Red for Lost, Blue for Found
+    // ── COMIC CONFIG & DESIGN SYSTEM CONSTANTS ────────────────────────────────
+    const pageWidth = 612;
+    const pageHeight = 792;
 
-    // Header section
-    doc.rect(0, 0, pageWidth, 110).fill(accentColor);
+    const bgComicYellow = "#FDF2A9";
+    const cyanAccent = "#22D3EE";
+    const purpleAccent = "#C084FC";
+    const brightRed = "#EF4444";
+    const deepBlack = "#000000";
+
+    const alertBannerColor = data.status === "LOST" ? brightRed : "#3B82F6";
+
+    // 1. FILL CANVAS BACKGROUND
+    doc.rect(0, 0, pageWidth, pageHeight).fill(bgComicYellow);
+
+    // 2. OUTER MIKU CANVAS BORDER
+    doc
+      .rect(15, 15, pageWidth - 30, pageHeight - 30)
+      .lineWidth(4)
+      .stroke(deepBlack);
+
+    // ── HEADER SECTION ────────────────────────────────────────────────────────
+    const headerX = 36;
+    const headerY = 36;
+    const headerW = pageWidth - 72;
+    const headerH = 85;
+
+    doc.rect(headerX + 8, headerY + 8, headerW, headerH).fill(deepBlack);
+    doc
+      .rect(headerX, headerY, headerW, headerH)
+      .fillAndStroke(alertBannerColor, deepBlack);
 
     doc
       .fillColor("#FFFFFF")
-      .fontSize(54)
+      .fontSize(44)
       .font("Helvetica-Bold")
-      .text(`${data.status} PET`, 0, 30, { align: "center", width: pageWidth });
-
-    // Pet name
-    doc
-      .fillColor("#212121")
-      .fontSize(36)
-      .font("Helvetica-Bold")
-      .text(data.petName.toUpperCase(), 36, 130, {
+      .text(`💥 ${data.status} PET! 💥`, headerX, headerY + 18, {
         align: "center",
-        width: pageWidth - 72,
+        width: headerW,
       });
 
-    // Main image section
-    // Centers a 280x280pt image on the canvas
-    const imgWidth = 280;
-    const imgHeight = 280;
-    const imgX = (pageWidth - imgWidth) / 2;
-    const imgY = 180;
+    // ── PET NAME BADGE ────────────────────────────────────────────────────────
+    const nameX = 36;
+    const nameY = 145;
+    const nameW = 220;
+    const nameH = 45;
 
-    // Draw a subtle dark frame around the photo
+    doc.rect(nameX + 4, nameY + 4, nameW, nameH).fill(deepBlack);
+    doc.rect(nameX, nameY, nameW, nameH).fillAndStroke(purpleAccent, deepBlack);
+
     doc
-      .rect(imgX - 4, imgY - 4, imgWidth + 8, imgHeight + 8)
-      .lineWidth(3)
-      .stroke("#E0E0E0");
+      .fillColor(deepBlack)
+      .fontSize(22)
+      .font("Helvetica-Bold")
+      .text(data.petName.toUpperCase(), nameX, nameY + 12, {
+        align: "center",
+        width: nameW,
+      });
+
+    // ── REWARD ACCENT STICKER ───────────────────────────────────────────────
+    if (data.reward) {
+      doc.save();
+      doc.rotate(-4, { origin: [pageWidth - 190, 155] });
+
+      doc.rect(pageWidth - 216, 149, 180, 40).fill(deepBlack);
+      doc
+        .rect(pageWidth - 220, 145, 180, 40)
+        .fillAndStroke("#FACC15", deepBlack);
+
+      doc
+        .fillColor(deepBlack)
+        .fontSize(16)
+        .font("Helvetica-Bold")
+        .text(`💥 ${data.reward}`, pageWidth - 220, 157, {
+          align: "center",
+          width: 180,
+        });
+
+      doc.restore();
+    }
+
+    // ── MAIN IMAGE SECTION (NEO-BRUTALIST COMIC PANEL) ──────────────────────
+    const imgWidth = 320;
+    const imgHeight = 240;
+    const imgX = (pageWidth - imgWidth) / 2;
+    const imgY = 220;
+
+    doc.rect(imgX + 10, imgY + 10, imgWidth, imgHeight).fill(deepBlack);
+    doc
+      .rect(imgX, imgY, imgWidth, imgHeight)
+      .lineWidth(4)
+      .fillAndStroke("#FFFFFF", deepBlack);
 
     if (imageBuffer) {
-      // If image exists, draw it normally
-      doc.image(imageBuffer, imgX, imgY, {
-        fit: [imgWidth, imgHeight],
+      doc.save();
+      doc.rect(imgX + 2, imgY + 2, imgWidth - 4, imgHeight - 4).clip();
+      doc.image(imageBuffer, imgX + 2, imgY + 2, {
+        fit: [imgWidth - 4, imgHeight - 4],
         align: "center",
         valign: "center",
       });
+      doc.restore();
     } else {
-      // Fallback: Fill box with light grey background and draw missing text
-      doc.rect(imgX, imgY, imgWidth, imgHeight).fill("#F5F5F5");
+      doc
+        .rect(imgX + 2, imgY + 2, imgWidth - 4, imgHeight - 4)
+        .fill(cyanAccent);
+      doc
+        .rect(imgX + 2, imgY + 2, imgWidth - 4, imgHeight - 4)
+        .lineWidth(2)
+        .stroke(deepBlack);
 
       doc
-        .fillColor("#757575")
-        .fontSize(14)
+        .fillColor(deepBlack)
+        .fontSize(16)
         .font("Helvetica-Bold")
         .text(
-          "PHOTO ONLINE ONLY\n\nScan QR or Visit App Profile",
+          "IMAGE TRANS-LINK ERROR!\n\nSCAN QR NODE TO INVENT DATA",
           imgX,
-          imgY + 120,
-          {
-            align: "center",
-            width: imgWidth,
-          },
+          imgY + 100,
+          { align: "center", width: imgWidth },
         );
     }
 
-    // Details section
-    let detailsY = 480;
+    // ── DOSSIER DATA DETAILS SECTION ─────────────────────────────────────────
+    let detailsBoxY = 490;
+    const detailsBoxW = pageWidth - 72;
+    const detailsBoxH = 145;
+
+    doc.rect(36 + 6, detailsBoxY + 6, detailsBoxW, detailsBoxH).fill(deepBlack);
     doc
-      .fillColor("#212121")
-      .fontSize(16)
+      .rect(36, detailsBoxY, detailsBoxW, detailsBoxH)
+      .lineWidth(4)
+      .fillAndStroke("#FFFFFF", deepBlack);
+
+    doc
+      .rect(36, detailsBoxY, detailsBoxW, 30)
+      .fillAndStroke(cyanAccent, deepBlack);
+    doc
+      .fillColor(deepBlack)
+      .fontSize(12)
       .font("Helvetica-Bold")
-      .text("DESCRIPTION & DETAILS", 50, detailsY);
+      .text("🕵️‍♂️ MISSION DOSSIER / CORE DATA CODES", 48, detailsBoxY + 9);
 
-    // Horizontal Separator Line
-    doc
-      .moveTo(50, detailsY + 20)
-      .lineTo(pageWidth - 50, detailsY + 20)
-      .lineWidth(1)
-      .stroke("#BDBDBD");
-
-    // Grid details layout
-    const labelX = 50;
-    const valueX = 180;
-    let currentY = detailsY + 32;
+    const labelX = 55;
+    const valueX = 210;
+    let currentY = detailsBoxY + 42;
 
     const rowItems = [
-      { label: "Breed / Species:", val: data.breed },
-      { label: "Color / Markings:", val: data.color },
-      { label: "Last Seen Location:", val: data.lastSeenLocation },
-      { label: "Date Missing:", val: data.lastSeenDate },
+      { label: "SPECIES // BREED :", val: data.breed },
+      { label: "COLOR MARKINGS :", val: data.color },
+      { label: "LAST SEEN ANCHOR :", val: data.lastSeenLocation },
+      { label: "TIMESTAMP MISSING:", val: data.lastSeenDate },
     ];
 
-    if (data.reward) {
-      rowItems.push({ label: "REWARD OFFERED:", val: data.reward });
-    }
-
     rowItems.forEach((item) => {
-      // Highlight rewards differently
-      const isReward = item.label.includes("REWARD");
-
       doc
         .font("Helvetica-Bold")
-        .fontSize(13)
-        .fillColor(isReward ? accentColor : "#616161")
-        .text(item.label, labelX, currentY);
+        .fontSize(12)
+        .fillColor(deepBlack)
+        .text(item.label.toUpperCase(), labelX, currentY);
 
       doc
-        .font(isReward ? "Helvetica-Bold" : "Helvetica")
-        .fontSize(13)
-        .fillColor(isReward ? accentColor : "#212121")
-        .text(item.val, valueX, currentY, { width: pageWidth - valueX - 50 });
+        .font("Helvetica")
+        .fontSize(12)
+        .fillColor("#374151")
+        .text(item.val, valueX, currentY, { width: pageWidth - valueX - 55 });
 
-      currentY += 22;
+      currentY += 24;
     });
 
-    // Contact section
-    const footerY = 670;
+    // ── FOOTER DASH TERMINAL DECORATION ─────────────────────────────────────
+    const lineY = 660;
     doc
-      .rect(36, footerY, pageWidth - 72, 80)
-      .fill("#F5F5F5")
-      .stroke("#E0E0E0");
+      .moveTo(36, lineY)
+      .lineTo(pageWidth - 36, lineY)
+      .lineWidth(3)
+      .dash(8, { space: 6 })
+      .stroke(deepBlack)
+      .undash();
+
+    // ── CONTACT SECTION BLOCK (UPDATED FOR MULTIPLE CONTACTS) ────────────────
+    const footerY = 685;
+    const footerW = pageWidth - 72;
+    const footerH = 65;
+
+    // Normalize incoming string fields or arrays safely
+    const phonesList = normalizeContactData(data.contactPhone);
+    const emailsList = normalizeContactData(data.contactEmail);
+
+    const phonesString = phonesList.join("  •  ");
+    const emailsString = emailsList.map((e) => e.toUpperCase()).join("  •  ");
+
+    // Dynamic layout scaling based on data payload density
+    const totalEntries = phonesList.length + emailsList.length;
+    const contactFontSize = totalEntries > 4 ? 11 : totalEntries > 2 ? 13 : 15;
+    const textGapOffset = totalEntries > 4 ? 26 : 32;
+
+    // Contact Footprint Shadow
+    doc.rect(36 + 6, footerY + 6, footerW, footerH).fill(deepBlack);
+    // Contact Container Box Frame
+    doc
+      .rect(36, footerY, footerW, footerH)
+      .lineWidth(4)
+      .fillAndStroke("#FFFFFF", deepBlack);
 
     doc
-      .fillColor("#212121")
-      .fontSize(14)
-      .font("Helvetica-Bold")
-      .text("IF YOU HAVE ANY INFORMATION, PLEASE CONTACT:", 36, footerY + 15, {
-        align: "center",
-        width: pageWidth - 72,
-      });
-
-    doc
-      .fillColor(accentColor)
-      .fontSize(20)
+      .fillColor(deepBlack)
+      .fontSize(10)
       .font("Helvetica-Bold")
       .text(
-        `Phone: ${data.contactPhone}   |   Email: ${data.contactEmail}`,
+        "🚨 IF YOU HAVE SIGNATURE DATA, INITIATE CONTACT IMMEDIATELY: 🚨",
         36,
-        footerY + 40,
-        { align: "center", width: pageWidth - 72 },
+        footerY + 10,
+        {
+          align: "center",
+          width: footerW,
+        },
       );
 
-    // Finalize document writing
+    // Render aggregated dynamic contact info block lines
+    doc
+      .fillColor(alertBannerColor)
+      .fontSize(contactFontSize)
+      .font("Helvetica-Bold")
+      .text(`TEL: ${phonesString || "N/A"}`, 42, footerY + textGapOffset, {
+        align: "center",
+        width: footerW - 12,
+      });
+
+    doc.text(
+      `EMAIL: ${emailsString || "N/A"}`,
+      42,
+      doc.y + 3, // Places the email row cleanly directly underneath phone rows
+      { align: "center", width: footerW - 12 },
+    );
+
+    // Finalize document writing pipeline
     doc.end();
     return stream;
   } catch (error) {

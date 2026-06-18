@@ -72,7 +72,10 @@ export const getAllPosts = async (req: AuthRequest, res: Response) => {
     const skip = (page - 1) * limit;
 
     const [posts, totalPosts] = await Promise.all([
-      PostModel.find({}).skip(skip).limit(limit).populate("author", "username"),
+      PostModel.find({})
+        .skip(skip)
+        .limit(limit)
+        .populate("author", "username email profilePic"),
       PostModel.countDocuments(),
     ]);
 
@@ -130,20 +133,20 @@ export const getMyPosts = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// Get post
-export const getPostDetails = async (req: AuthRequest, res: Response) => {
-  try {
-    const postId = req.params.id;
-    // populate author
-    const post = await PostModel.findById(postId).populate(
-      "author",
-      "username",
-    );
-    res.status(200).json({ message: "Post fetched successfully", data: post });
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching post" });
-  }
-};
+// // Get post
+// export const getPostDetails = async (req: AuthRequest, res: Response) => {
+//   try {
+//     const postId = req.params.id;
+//     // populate author
+//     const post = await PostModel.findById(postId).populate(
+//       "author",
+//       "username",
+//     );
+//     res.status(200).json({ message: "Post fetched successfully", data: post });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error fetching post" });
+//   }
+// };
 
 // Update post
 export const updatePost = async (req: AuthRequest, res: Response) => {
@@ -209,7 +212,14 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
 export const deletePost = async (req: AuthRequest, res: Response) => {
   try {
     const postId = req.params.id;
-    const deletedPost = await PostModel.findByIdAndDelete(postId);
+    const userId = req.user?.sub;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID not found" });
+    }
+
+    await PostModel.find({ _id: postId, author: userId }).deleteOne();
+
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting post" });
@@ -315,7 +325,3 @@ export const getBookmarkPosts = async (req: AuthRequest, res: Response) => {
     console.log(error);
   }
 };
-
-export const commentPost = async (req: AuthRequest, res: Response) => {};
-
-export const deleteComment = async (req: AuthRequest, res: Response) => {};

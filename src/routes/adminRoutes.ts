@@ -2,7 +2,17 @@ import { Router } from "express";
 import { authenticate } from "../middleware/auth";
 import { requireRole } from "../middleware/role";
 import { UserRole } from "../models/userModel";
-import { banUser, deleteUser, getAllUsers, getDashboardStats } from "../controller/adminController";
+import {
+  banUser,
+  deleteUser,
+  getAllUsers,
+  getDashboardStats,
+  unbanUser,
+  changeRole,
+  deletePost,
+  allUsers,
+  sendEmail,
+} from "../controller/adminController";
 
 const adminRoutes = Router();
 
@@ -13,28 +23,60 @@ adminRoutes.get(
   getDashboardStats,
 );
 
-adminRoutes.get(
-  "/get-users",
+adminRoutes.delete(
+  "/post/delete/:id",
   authenticate,
+  requireRole([UserRole.MODERATOR]),
+  deletePost,
+);
+
+adminRoutes.get(
+  "/user/all",
   authenticate,
   requireRole([UserRole.MODERATOR]),
   getAllUsers,
 );
 
 adminRoutes.delete(
-  "/delete-user/:id",
-  authenticate,
+  "/user/delete/:id",
   authenticate,
   requireRole([UserRole.MODERATOR]),
   deleteUser,
 );
 
+// adminRoutes.put(
+//   "/ban-user/:id",
+//   authenticate,
+//   requireRole([UserRole.MODERATOR]),
+//   banUser,
+// );
+
+// adminRoutes.put(
+//   "/unban-user/:id",
+//   authenticate,
+//   requireRole([UserRole.MODERATOR]),
+//   unbanUser,
+// );
+
+adminRoutes.get(
+  "/all-users",
+  authenticate,
+  requireRole([UserRole.ADMIN]),
+  allUsers,
+);
+
 adminRoutes.put(
-  "/ban-user/:id",
+  "/user/:id/role/:role",
   authenticate,
-  requireRole([UserRole.MODERATOR]),
+  requireRole([UserRole.ADMIN]),
+  changeRole,
+);
+
+adminRoutes.post(
+  "/send-email",
   authenticate,
-  banUser,
+  requireRole([UserRole.ADMIN, UserRole.MODERATOR]),
+  sendEmail,
 );
 
 export default adminRoutes;

@@ -66,3 +66,10 @@ export const verifyOtp = (
   otpStore.delete(email);
   return { success: true, message: "OTP verified successfully." };
 };
+
+export const peekOtp = (email: string, submittedOtp: string): boolean => {
+  const record = otpStore.get(email);
+  if (!record) return false;
+  if (Date.now() > record.expiresAt) return false;
+  return record.otp === submittedOtp;
+};

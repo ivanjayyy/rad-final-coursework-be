@@ -14,6 +14,7 @@ export interface IUser extends Document {
   password: string;
   roles: UserRole[];
   approved: boolean;
+  profilePic?: string;
 }
 
 // User schema
@@ -28,6 +29,7 @@ const userSchema = new Schema<IUser>(
       default: [UserRole.USER],
     },
     approved: { type: Boolean, default: false },
+    profilePic: { type: String },
   },
   { timestamps: true },
 );

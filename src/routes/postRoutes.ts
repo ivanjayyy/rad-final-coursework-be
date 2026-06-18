@@ -1,13 +1,10 @@
 import { Router } from "express";
 import {
   bookmarkPost,
-  commentPost,
   createPost,
-  deleteComment,
   deletePost,
   getAllPosts,
   getMyPosts,
-  getPostDetails,
   removeBookmark,
   getBookmarkPosts,
   updatePost,
@@ -16,6 +13,8 @@ import { upload } from "../middleware/upload";
 import { validateImage } from "../middleware/validate";
 import { generateFlyer } from "../controller/flyerController";
 import { authenticate } from "../middleware/auth";
+import { UserRole } from "../models/userModel";
+import { requireRole } from "../middleware/role";
 
 const postRoutes = Router();
 
@@ -23,43 +22,71 @@ const postRoutes = Router();
 postRoutes.post(
   "/create",
   authenticate,
+  requireRole([UserRole.USER]),
   upload.single("image"),
   validateImage,
   createPost,
 );
 
 // GET /api/v1/post/all
-postRoutes.get("/all", authenticate, getAllPosts);
+postRoutes.get(
+  "/all",
+  authenticate,
+  requireRole([UserRole.MODERATOR, UserRole.USER]),
+  getAllPosts,
+);
 
 // GET /api/v1/post/my
-postRoutes.get("/my", authenticate, getMyPosts);
+postRoutes.get("/my", authenticate, requireRole([UserRole.USER]), getMyPosts);
 
 // POST /api/v1/post/flyer
-postRoutes.get("/flyer/:id", authenticate, generateFlyer);
+postRoutes.get(
+  "/flyer/:id",
+  authenticate,
+  requireRole([UserRole.USER]),
+  generateFlyer,
+);
 
-postRoutes.get("/bookmark-posts", authenticate, getBookmarkPosts);
+postRoutes.get(
+  "/bookmark-posts",
+  authenticate,
+  requireRole([UserRole.USER]),
+  getBookmarkPosts,
+);
 
 // GET /api/v1/post/:id
-postRoutes.get("/:id", authenticate, getPostDetails);
+// postRoutes.get("/:id", authenticate, getPostDetails);
 
 // POST /api/v1/post/update
 postRoutes.put(
   "/update/:id",
   authenticate,
+  requireRole([UserRole.USER]),
   upload.single("image"),
   validateImage,
   updatePost,
 );
 
 // POST /api/v1/post/delete
-postRoutes.delete("/delete/:id", authenticate, deletePost);
+postRoutes.delete(
+  "/delete/:id",
+  authenticate,
+  requireRole([UserRole.USER]),
+  deletePost,
+);
 
-postRoutes.put("/bookmark/:id", authenticate, bookmarkPost);
+postRoutes.put(
+  "/bookmark/:id",
+  authenticate,
+  requireRole([UserRole.USER]),
+  bookmarkPost,
+);
 
-postRoutes.put("/unbookmark/:id", authenticate, removeBookmark);
-
-// postRoutes.put("/comment", commentPost);
-
-// postRoutes.delete("/comment/:id", deleteComment);
+postRoutes.put(
+  "/unbookmark/:id",
+  authenticate,
+  requireRole([UserRole.USER]),
+  removeBookmark,
+);
 
 export default postRoutes;

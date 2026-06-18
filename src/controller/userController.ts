@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { UserModel } from "../models/userModel";
 import { AuthRequest } from "../middleware/auth";
+import cloudinary from "../config/cloudinary";
 
 // Update user
 export const updateUser = async (req: AuthRequest, res: Response) => {
@@ -15,34 +16,54 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
 };
 
 // Delete user
-export const deleteUser = async (req: AuthRequest, res: Response) => {
+export const deleteAccount = async (req: AuthRequest, res: Response) => {
   try {
-    const user = await UserModel.findByIdAndDelete(req.user.sub);
+    const userId = req.user.sub;
+    const user = await UserModel.findByIdAndDelete(userId);
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting user" });
   }
 };
 
-// Get user
-export const getUserDetails = async (req: AuthRequest, res: Response) => {
-  try {
-    const userId = req.params.id;
-    const user = await UserModel.findById(userId);
-    res.status(200).json({ message: "User fetched successfully", data: user });
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching user" });
-  }
-};
+// // Get user
+// export const getUserDetails = async (req: AuthRequest, res: Response) => {
+//   try {
+//     const userId = req.params.id;
+//     const user = await UserModel.findById(userId).select("-password");
+//     res.status(200).json({ message: "User fetched successfully", data: user });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error fetching user" });
+//   }
+// };
 
-// Get all users
-export const getAllUsers = async (req: AuthRequest, res: Response) => {
+export const updateProfilePic = async (req: AuthRequest, res: Response) => {
   try {
-    const users = await UserModel.find({});
-    res
-      .status(200)
-      .json({ message: "Users fetched successfully", data: users });
+    let imageURL = "";
+    if (req.file) {
+      const result: any = await new Promise((resolve, reject) => {
+        const upload_stream = cloudinary.uploader.upload_stream(
+          { folder: "users" },
+          (error: any, result: any) => {
+            if (error) {
+              return reject(error);
+            } else {
+              resolve(result);
+            }
+          },
+        );
+        upload_stream.end(req.file?.buffer);
+      });
+      imageURL = result.secure_url;
+    }
+
+    const user = await UserModel.findByIdAndUpdate(
+      req.user.sub,
+      { profilePic: imageURL },
+      { new: true },
+    );
+    res.status(200).json({ message: "User updated successfully", data: user });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching users" });
+    res.status(500).json({ message: "Error updating user" });
   }
 };
