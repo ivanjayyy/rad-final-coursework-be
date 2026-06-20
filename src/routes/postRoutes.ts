@@ -42,8 +42,8 @@ postRoutes.get("/my", authenticate, requireRole([UserRole.USER]), getMyPosts);
 // POST /api/v1/post/flyer
 postRoutes.get(
   "/flyer/:id",
-  authenticate,
-  requireRole([UserRole.USER]),
+  // authenticate,
+  // requireRole([UserRole.USER]),
   getFlyerRoute,
 );
 
