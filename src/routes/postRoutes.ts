@@ -11,7 +11,7 @@ import {
 } from "../controller/postController";
 import { upload } from "../middleware/upload";
 import { validateImage } from "../middleware/validate";
-import { generateFlyer } from "../controller/flyerController";
+import { getFlyerRoute } from "../controller/flyerController";
 import { authenticate } from "../middleware/auth";
 import { UserRole } from "../models/userModel";
 import { requireRole } from "../middleware/role";
@@ -44,7 +44,7 @@ postRoutes.get(
   "/flyer/:id",
   authenticate,
   requireRole([UserRole.USER]),
-  generateFlyer,
+  getFlyerRoute,
 );
 
 postRoutes.get(
