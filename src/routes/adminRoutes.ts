@@ -76,19 +76,19 @@ adminRoutes.post(
 );
 
 adminRoutes.get(
-  "/admin/dashboard-summary",
+  "/dashboard-summary",
   authenticate,
   requireRole([UserRole.MODERATOR]),
   getDashboardSummary,
 );
 adminRoutes.get(
-  "/admin/analytics/posts-velocity",
+  "/analytics/posts-velocity",
   authenticate,
   requireRole([UserRole.MODERATOR]),
   getPostVelocityMetrics,
 );
 adminRoutes.get(
-  "/admin/analytics/case-allocations",
+  "/analytics/case-allocations",
   authenticate,
   requireRole([UserRole.MODERATOR]),
   getCaseAllocations,
