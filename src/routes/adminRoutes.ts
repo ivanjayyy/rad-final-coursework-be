@@ -57,7 +57,7 @@ adminRoutes.delete(
 adminRoutes.get(
   "/all-users",
   authenticate,
-  requireRole([UserRole.ADMIN]),
+  requireRole([UserRole.MODERATOR]),
   allUsers,
 );
 
