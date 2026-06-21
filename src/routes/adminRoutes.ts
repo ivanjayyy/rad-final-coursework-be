@@ -12,16 +12,12 @@ import {
   deletePost,
   allUsers,
   sendEmail,
+  getDashboardSummary,
+  getPostVelocityMetrics,
+  getCaseAllocations,
 } from "../controller/adminController";
 
 const adminRoutes = Router();
-
-adminRoutes.get(
-  "/stats",
-  authenticate,
-  requireRole([UserRole.MODERATOR]),
-  getDashboardStats,
-);
 
 adminRoutes.delete(
   "/post/delete/:id",
@@ -77,6 +73,25 @@ adminRoutes.post(
   authenticate,
   requireRole([UserRole.ADMIN, UserRole.MODERATOR]),
   sendEmail,
+);
+
+adminRoutes.get(
+  "/admin/dashboard-summary",
+  authenticate,
+  requireRole([UserRole.MODERATOR]),
+  getDashboardSummary,
+);
+adminRoutes.get(
+  "/admin/analytics/posts-velocity",
+  authenticate,
+  requireRole([UserRole.MODERATOR]),
+  getPostVelocityMetrics,
+);
+adminRoutes.get(
+  "/admin/analytics/case-allocations",
+  authenticate,
+  requireRole([UserRole.MODERATOR]),
+  getCaseAllocations,
 );
 
 export default adminRoutes;
