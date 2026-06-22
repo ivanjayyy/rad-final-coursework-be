@@ -54,7 +54,7 @@ adminRoutes.put(
 adminRoutes.post(
   "/send-email",
   authenticate,
-  requireRole([UserRole.ADMIN, UserRole.MODERATOR]),
+  requireRole([UserRole.MODERATOR]),
   sendEmail,
 );
 
