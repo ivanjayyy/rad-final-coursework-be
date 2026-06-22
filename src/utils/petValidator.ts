@@ -1,7 +1,6 @@
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 
 // Initialize the Gemini client.
-// It automatically picks up the GOOGLE_API_KEY environment variable.
 const ai = new GoogleGenAI({});
 
 // Interface for the validation result

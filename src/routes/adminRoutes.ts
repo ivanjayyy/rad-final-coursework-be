@@ -3,11 +3,8 @@ import { authenticate } from "../middleware/auth";
 import { requireRole } from "../middleware/role";
 import { UserRole } from "../models/userModel";
 import {
-  banUser,
   deleteUser,
   getAllUsers,
-  getDashboardStats,
-  unbanUser,
   changeRole,
   deletePost,
   allUsers,
@@ -39,20 +36,6 @@ adminRoutes.delete(
   requireRole([UserRole.MODERATOR]),
   deleteUser,
 );
-
-// adminRoutes.put(
-//   "/ban-user/:id",
-//   authenticate,
-//   requireRole([UserRole.MODERATOR]),
-//   banUser,
-// );
-
-// adminRoutes.put(
-//   "/unban-user/:id",
-//   authenticate,
-//   requireRole([UserRole.MODERATOR]),
-//   unbanUser,
-// );
 
 adminRoutes.get(
   "/all-users",

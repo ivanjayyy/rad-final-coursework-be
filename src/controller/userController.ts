@@ -26,17 +26,6 @@ export const deleteAccount = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// // Get user
-// export const getUserDetails = async (req: AuthRequest, res: Response) => {
-//   try {
-//     const userId = req.params.id;
-//     const user = await UserModel.findById(userId).select("-password");
-//     res.status(200).json({ message: "User fetched successfully", data: user });
-//   } catch (error) {
-//     res.status(500).json({ message: "Error fetching user" });
-//   }
-// };
-
 export const updateProfilePic = async (req: AuthRequest, res: Response) => {
   try {
     let imageURL = "";

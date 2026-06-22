@@ -5,30 +5,6 @@ import { PostModel, PostStatus } from "../models/postModel";
 import { sendEmailToUser } from "../utils/emailService";
 import { BookmarkModel } from "../models/boomarkModel";
 
-export const getDashboardStats = async (req: AuthRequest, res: Response) => {
-  try {
-    // Get all users, posts, comments, bookmarks, and reports
-    const [users, posts] = await Promise.all([
-      UserModel.countDocuments(),
-      PostModel.countDocuments(),
-      // CommentModel.countDocuments(),
-      // BookmarkModel.countDocuments(),
-      // ReportModel.countDocuments(),
-    ]);
-
-    res.status(200).json({
-      success: true,
-      message: "Dashboard stats fetched successfully",
-      data: {
-        users,
-        posts,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching dashboard stats" });
-  }
-};
-
 export const deletePost = async (req: AuthRequest, res: Response) => {
   try {
     const postId = req.params.id;

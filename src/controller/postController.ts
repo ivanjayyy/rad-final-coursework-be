@@ -133,21 +133,6 @@ export const getMyPosts = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// // Get post
-// export const getPostDetails = async (req: AuthRequest, res: Response) => {
-//   try {
-//     const postId = req.params.id;
-//     // populate author
-//     const post = await PostModel.findById(postId).populate(
-//       "author",
-//       "username",
-//     );
-//     res.status(200).json({ message: "Post fetched successfully", data: post });
-//   } catch (error) {
-//     res.status(500).json({ message: "Error fetching post" });
-//   }
-// };
-
 // Update post
 export const updatePost = async (req: AuthRequest, res: Response) => {
   const {
