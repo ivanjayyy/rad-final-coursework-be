@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
-import { createAndSendOtp, peekOtp, verifyOtp } from "../utils/otpService";
+import { createAndSendOtp, peekOtp } from "../utils/otpService";
 
-// POST /api/otp/send
-// Body: { email: string }
+// OTP Controller
 export const sendOtp = async (req: Request, res: Response): Promise<void> => {
   const { email } = req.body;
 
@@ -20,8 +19,7 @@ export const sendOtp = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-// POST /api/otp/verify
-// Body: { email: string; otp: string }
+// Verify OTP
 export const verifyOtpController = async (
   req: Request,
   res: Response,

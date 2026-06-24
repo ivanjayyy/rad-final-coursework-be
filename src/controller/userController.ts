@@ -6,26 +6,38 @@ import cloudinary from "../config/cloudinary";
 // Update user
 export const updateUser = async (req: AuthRequest, res: Response) => {
   try {
-    const user = await UserModel.findByIdAndUpdate(req.user.sub, req.body, {
-      new: true,
-    });
+    const { username, email } = req.body;
+    const userId = req.user.sub;
+
+    if (!userId || !username || !email) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const user = await UserModel.findByIdAndUpdate(
+      userId,
+      { username, email },
+      {
+        new: true,
+      },
+    );
     res.status(200).json({ message: "User updated successfully", data: user });
   } catch (error) {
     res.status(500).json({ message: "Error updating user" });
   }
 };
 
-// Delete user
+// Delete account
 export const deleteAccount = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user.sub;
     const user = await UserModel.findByIdAndDelete(userId);
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({ message: "Account deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting user" });
+    res.status(500).json({ message: "Error deleting account" });
   }
 };
 
+// Update profile pic
 export const updateProfilePic = async (req: AuthRequest, res: Response) => {
   try {
     let imageURL = "";

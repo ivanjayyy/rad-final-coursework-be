@@ -5,6 +5,7 @@ import { PostModel, PostStatus } from "../models/postModel";
 import { sendEmailToUser } from "../utils/emailService";
 import { BookmarkModel } from "../models/boomarkModel";
 
+// Delete post
 export const deletePost = async (req: AuthRequest, res: Response) => {
   try {
     const postId = req.params.id;
@@ -27,6 +28,7 @@ export const allUsers = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Get all users(USER)
 export const getAllUsers = async (req: AuthRequest, res: Response) => {
   try {
     const users = await UserModel.find({
@@ -40,6 +42,7 @@ export const getAllUsers = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Delete user
 export const deleteUser = async (req: AuthRequest, res: Response) => {
   try {
     const user = await UserModel.findByIdAndDelete(req.params.id);
@@ -49,6 +52,7 @@ export const deleteUser = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Ban user
 export const banUser = async (req: AuthRequest, res: Response) => {
   try {
     const user = await UserModel.findById(req.params.id);
@@ -63,6 +67,7 @@ export const banUser = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Unban user
 export const unbanUser = async (req: AuthRequest, res: Response) => {
   try {
     const user = await UserModel.findById(req.params.id);
@@ -77,6 +82,7 @@ export const unbanUser = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Change user role
 export const changeRole = async (req: AuthRequest, res: Response) => {
   try {
     const user = await UserModel.findById(req.params.id);
@@ -102,6 +108,7 @@ export const changeRole = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Send email
 export const sendEmail = async (req: AuthRequest, res: Response) => {
   try {
     const { email, subject, body } = req.body;
@@ -113,10 +120,7 @@ export const sendEmail = async (req: AuthRequest, res: Response) => {
   }
 };
 
-/**
- * GET /api/admin/dashboard-summary
- * Computes live database statistics for top dashboard metrics cards
- */
+// Get dashboard summary
 export const getDashboardSummary = async (
   req: AuthRequest,
   res: Response,
@@ -145,10 +149,7 @@ export const getDashboardSummary = async (
   }
 };
 
-/**
- * GET /api/admin/analytics/posts-velocity
- * Aggregates post generation counts for the last 5 months for the bar graph
- */
+// Get post velocity metrics
 export const getPostVelocityMetrics = async (
   req: AuthRequest,
   res: Response,
@@ -232,10 +233,7 @@ export const getPostVelocityMetrics = async (
   }
 };
 
-/**
- * GET /api/admin/analytics/case-allocations
- * Calculates percentage splits between LOST and FOUND pet markers
- */
+// Get case allocations
 export const getCaseAllocations = async (
   req: AuthRequest,
   res: Response,

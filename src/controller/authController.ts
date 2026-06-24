@@ -143,6 +143,7 @@ export const refreshToken = async (req: Request, res: Response) => {
   }
 };
 
+// Reset password
 export const resetPassword = async (req: Request, res: Response) => {
   try {
     // TODO: implement password reset logic
@@ -166,6 +167,7 @@ export const resetPassword = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Hash the new password
     const salt = await bcrypt.genSaltSync(10);
     const hashedPassword = await bcrypt.hashSync(newPassword, salt);
 

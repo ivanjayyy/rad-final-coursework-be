@@ -3,17 +3,25 @@ import { FlyerData, generatePetFlyer } from "../utils/flyerService";
 import { PostModel } from "../models/postModel";
 import { AuthRequest } from "../middleware/auth";
 
+// Get flyer
 export const getFlyerRoute = async (req: AuthRequest, res: Response) => {
   try {
     const postId = req.params.id;
 
     const post = await PostModel.findById(postId);
 
+    const postAuthor = post?.author;
+
+    if (postAuthor !== req.user?.sub) {
+      return res.status(401).json({ error: "Unauthorized access." });
+    }
+
     if (!post) {
       return res.status(404).json({ error: "Post not found." });
     }
-    
-    const mockData: FlyerData = {
+
+    // Get post data
+    const postData: FlyerData = {
       status: post.status ?? "",
       petName: post.petName ?? "",
       breed: post.breed ?? "",
@@ -26,7 +34,7 @@ export const getFlyerRoute = async (req: AuthRequest, res: Response) => {
       imageUrl: post.imageURL ?? "",
     };
 
-    const pdfStream = await generatePetFlyer(mockData);
+    const pdfStream = await generatePetFlyer(postData);
 
     // 🌟 THESE HEADERS ARE CRITICAL FOR OPENING IN NEW WINDOW:
     res.setHeader("Content-Type", "application/pdf");

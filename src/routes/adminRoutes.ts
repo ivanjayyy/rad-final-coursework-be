@@ -16,6 +16,7 @@ import {
 
 const adminRoutes = Router();
 
+// POST /api/v1/admin/post/delete
 adminRoutes.delete(
   "/post/delete/:id",
   authenticate,
@@ -23,6 +24,7 @@ adminRoutes.delete(
   deletePost,
 );
 
+// POST /api/v1/admin/user/all
 adminRoutes.get(
   "/user/all",
   authenticate,
@@ -30,6 +32,7 @@ adminRoutes.get(
   getAllUsers,
 );
 
+// POST /api/v1/admin/user/delete
 adminRoutes.delete(
   "/user/delete/:id",
   authenticate,
@@ -37,6 +40,7 @@ adminRoutes.delete(
   deleteUser,
 );
 
+// POST /api/v1/admin/all-users
 adminRoutes.get(
   "/all-users",
   authenticate,
@@ -44,6 +48,7 @@ adminRoutes.get(
   allUsers,
 );
 
+// POST /api/v1/admin/user/:id/role
 adminRoutes.put(
   "/user/:id/role/:role",
   authenticate,
@@ -51,6 +56,7 @@ adminRoutes.put(
   changeRole,
 );
 
+// POST /api/v1/admin/send-email
 adminRoutes.post(
   "/send-email",
   authenticate,
@@ -58,18 +64,23 @@ adminRoutes.post(
   sendEmail,
 );
 
+// POST /api/v1/admin/dashboard-summary
 adminRoutes.get(
   "/dashboard-summary",
   authenticate,
   requireRole([UserRole.MODERATOR]),
   getDashboardSummary,
 );
+
+// POST /api/v1/admin/analytics/posts-velocity
 adminRoutes.get(
   "/analytics/posts-velocity",
   authenticate,
   requireRole([UserRole.MODERATOR]),
   getPostVelocityMetrics,
 );
+
+// POST /api/v1/admin/analytics/case-allocations
 adminRoutes.get(
   "/analytics/case-allocations",
   authenticate,

@@ -29,6 +29,7 @@ authRoutes.get(
 // POST /api/v1/auth/refresh
 authRoutes.post("/refresh", refreshToken);
 
+// POST /api/v1/auth/reset-password
 authRoutes.post(
   "/reset-password",
   authenticate,

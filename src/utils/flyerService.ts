@@ -2,6 +2,7 @@ import PDFDocument from "pdfkit";
 import axios from "axios";
 import { PassThrough } from "stream";
 
+// Flyer data
 export interface FlyerData {
   status: "LOST" | "FOUND";
   petName: string;
@@ -15,6 +16,7 @@ export interface FlyerData {
   imageUrl: string;
 }
 
+// Normalize contact data
 const normalizeContactData = (
   field: string | string[] | undefined,
 ): string[] => {
@@ -23,6 +25,7 @@ const normalizeContactData = (
   return field.split(/[\s,;|]+/).filter(Boolean);
 };
 
+// Generate PDF flyer
 export async function generatePetFlyer(data: FlyerData): Promise<PassThrough> {
   const doc = new PDFDocument({ size: "LETTER", margin: 36 });
   const stream = new PassThrough();
@@ -39,6 +42,7 @@ export async function generatePetFlyer(data: FlyerData): Promise<PassThrough> {
           responseType: "arraybuffer",
           timeout: 5000,
         });
+        // Convert image response to buffer
         imageBuffer = Buffer.from(imageResponse.data);
       }
     } catch (imgError) {

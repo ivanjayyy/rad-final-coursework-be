@@ -47,6 +47,7 @@ postRoutes.get(
   getFlyerRoute,
 );
 
+// GET /api/v1/post/my
 postRoutes.get(
   "/bookmark-posts",
   authenticate,
@@ -75,6 +76,7 @@ postRoutes.delete(
   deletePost,
 );
 
+// POST /api/v1/post/bookmark
 postRoutes.put(
   "/bookmark/:id",
   authenticate,
@@ -82,6 +84,8 @@ postRoutes.put(
   bookmarkPost,
 );
 
+
+// POST /api/v1/post/unbookmark
 postRoutes.put(
   "/unbookmark/:id",
   authenticate,

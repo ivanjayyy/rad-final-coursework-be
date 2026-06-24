@@ -136,6 +136,7 @@ export const getMyPosts = async (req: AuthRequest, res: Response) => {
 // Update post
 export const updatePost = async (req: AuthRequest, res: Response) => {
   const {
+    status,
     petName,
     breed,
     color,
@@ -148,6 +149,16 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
 
   try {
     const postId = req.params.id;
+    const userId = req.user?.sub;
+
+    const post = await PostModel.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (post.author.toString() !== userId) {
+      return res.status(401).json({ message: "Unauthorized access" });
+    }
 
     // Upload image
     let imageURL = "";
@@ -171,6 +182,7 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
     const updatedPost = await PostModel.findByIdAndUpdate(
       postId,
       {
+        status,
         petName,
         breed,
         color,
@@ -203,6 +215,15 @@ export const deletePost = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: "User ID not found" });
     }
 
+    const post = await PostModel.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (post.author.toString() !== userId) {
+      return res.status(401).json({ message: "Unauthorized access" });
+    }
+
     await PostModel.find({ _id: postId, author: userId }).deleteOne();
 
     res.status(200).json({ message: "Post deleted successfully" });
@@ -211,6 +232,7 @@ export const deletePost = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Bookmark post
 export const bookmarkPost = async (req: AuthRequest, res: Response) => {
   try {
     const postId = req.params.id;
@@ -226,6 +248,11 @@ export const bookmarkPost = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
+    if (post.author.toString() !== userId) {
+      return res.status(401).json({ message: "Unauthorized access" });
+    }
+
+    // Add userId to post's bookmarks array
     post.bookmark?.push(userId);
     await post.save();
 
@@ -242,6 +269,7 @@ export const bookmarkPost = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Remove bookmark
 export const removeBookmark = async (req: AuthRequest, res: Response) => {
   try {
     const postId = req.params.id;
@@ -257,13 +285,16 @@ export const removeBookmark = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
+    if (post.author.toString() !== userId) {
+      return res.status(401).json({ message: "Unauthorized access" });
+    }
+
+    // Remove from BookmarkModel
     await BookmarkModel.deleteOne({ post: postId, user: userId });
 
     // type ObjectId[]
     post.bookmark = post.bookmark?.filter((id) => id.toString() !== userId);
     await post.save();
-
-    // Remove from BookmarkModel
 
     res.status(200).json({ message: "Post bookmark removed successfully" });
   } catch (error) {
@@ -271,6 +302,7 @@ export const removeBookmark = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Get bookmark posts
 export const getBookmarkPosts = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.sub;

@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { sendOtpEmail } from "./emailService";
 
+// Interface for OTP record
 interface OtpRecord {
   otp: string;
   expiresAt: number; // unix ms
@@ -8,14 +9,15 @@ interface OtpRecord {
 }
 
 // In-memory store: keyed by email
-// For production, replace with Redis: await redis.set(`otp:${email}`, JSON.stringify(record), "PX", TTL_MS)
 const otpStore = new Map<string, OtpRecord>();
 
 const OTP_TTL_MS = 10 * 60 * 1000; // 10 minutes
 const MAX_ATTEMPTS = 5;
 
+// Generate a random 6-digit OTP
 const generateOtp = (): string => crypto.randomInt(100000, 999999).toString();
 
+// Function to create and send an OTP
 export const createAndSendOtp = async (email: string): Promise<void> => {
   const otp = generateOtp();
 
@@ -28,6 +30,7 @@ export const createAndSendOtp = async (email: string): Promise<void> => {
   await sendOtpEmail(email, otp);
 };
 
+// Function to verify an OTP
 export const verifyOtp = (
   email: string,
   submittedOtp: string,
@@ -41,6 +44,7 @@ export const verifyOtp = (
     };
   }
 
+  // Check if the OTP has expired
   if (Date.now() > record.expiresAt) {
     otpStore.delete(email);
     return {
@@ -49,6 +53,7 @@ export const verifyOtp = (
     };
   }
 
+  // Check if the OTP has been used too many times
   if (record.attempts >= MAX_ATTEMPTS) {
     otpStore.delete(email);
     return {
@@ -57,6 +62,7 @@ export const verifyOtp = (
     };
   }
 
+  // Check if the OTP is correct
   if (record.otp !== submittedOtp) {
     record.attempts += 1;
     return { success: false, message: "Incorrect OTP. Please try again." };
@@ -67,6 +73,7 @@ export const verifyOtp = (
   return { success: true, message: "OTP verified successfully." };
 };
 
+// Function to peek at an OTP
 export const peekOtp = (email: string, submittedOtp: string): boolean => {
   const record = otpStore.get(email);
   if (!record) return false;

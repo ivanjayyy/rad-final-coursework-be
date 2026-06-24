@@ -27,6 +27,7 @@ userRoutes.delete(
   deleteAccount,
 );
 
+// POST /api/v1/user/profile-pic
 userRoutes.put(
   "/profile-pic",
   authenticate,
