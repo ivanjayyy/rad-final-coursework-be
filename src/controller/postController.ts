@@ -248,10 +248,6 @@ export const bookmarkPost = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    if (post.author.toString() !== userId) {
-      return res.status(401).json({ message: "Unauthorized access" });
-    }
-
     // Add userId to post's bookmarks array
     post.bookmark?.push(userId);
     await post.save();
@@ -283,10 +279,6 @@ export const removeBookmark = async (req: AuthRequest, res: Response) => {
     const post = await PostModel.findById(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
-    }
-
-    if (post.author.toString() !== userId) {
-      return res.status(401).json({ message: "Unauthorized access" });
     }
 
     // Remove from BookmarkModel
