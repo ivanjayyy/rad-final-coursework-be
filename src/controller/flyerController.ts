@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { FlyerData, generatePetFlyer } from "../utils/flyerService";
+import { FlyerData, generatePetFlyer } from "../service/flyerService";
 import { PostModel } from "../models/postModel";
 import { AuthRequest } from "../middleware/auth";
 

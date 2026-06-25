@@ -2,7 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "../middleware/auth";
 import { UserModel, UserRole } from "../models/userModel";
 import { PostModel, PostStatus } from "../models/postModel";
-import { sendEmailToUser } from "../utils/emailService";
+import { sendEmailToUser } from "../service/emailService";
 import { BookmarkModel } from "../models/boomarkModel";
 
 // Delete post

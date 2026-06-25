@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { validatePetImage } from "../utils/petValidator";
+import { validatePetImage } from "../service/petValidator";
 
 export async function validateImage(
   req: Request,

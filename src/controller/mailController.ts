@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createAndSendOtp, peekOtp } from "../utils/otpService";
+import { createAndSendOtp, peekOtp } from "../service/otpService";
 
 // OTP Controller
 export const sendOtp = async (req: Request, res: Response): Promise<void> => {

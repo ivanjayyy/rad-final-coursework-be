@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { UserModel, UserRole } from "../models/userModel";
-import { signAccessToken, signRefreshToken } from "../utils/tokens";
+import { signAccessToken, signRefreshToken } from "../service/tokens";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { AuthRequest } from "../middleware/auth";
-import { verifyOtp } from "../utils/otpService";
-import { sendWelcomeEmail } from "../utils/emailService";
+import { verifyOtp } from "../service/otpService";
+import { sendWelcomeEmail } from "../service/emailService";
 
 dotenv.config();
 
