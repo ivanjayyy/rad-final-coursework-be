@@ -11,12 +11,6 @@ export const getFlyerRoute = async (req: AuthRequest, res: Response) => {
 
     const post = await PostModel.findById(postId);
 
-    const postAuthor = post?.author;
-
-    if (postAuthor !== req.user?.sub) {
-      return res.status(401).json({ error: "Unauthorized access." });
-    }
-
     if (!post) {
       return res.status(404).json({ error: "Post not found." });
     }

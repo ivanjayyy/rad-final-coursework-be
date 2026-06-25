@@ -44,7 +44,7 @@ adminRoutes.delete(
 adminRoutes.get(
   "/all-users",
   authenticate,
-  requireRole([UserRole.MODERATOR]),
+  requireRole([UserRole.ADMIN]),
   allUsers,
 );
 
@@ -68,7 +68,7 @@ adminRoutes.post(
 adminRoutes.get(
   "/dashboard-summary",
   authenticate,
-  requireRole([UserRole.MODERATOR]),
+  requireRole([UserRole.ADMIN]),
   getDashboardSummary,
 );
 
@@ -76,7 +76,7 @@ adminRoutes.get(
 adminRoutes.get(
   "/analytics/posts-velocity",
   authenticate,
-  requireRole([UserRole.MODERATOR]),
+  requireRole([UserRole.ADMIN]),
   getPostVelocityMetrics,
 );
 
@@ -84,7 +84,7 @@ adminRoutes.get(
 adminRoutes.get(
   "/analytics/case-allocations",
   authenticate,
-  requireRole([UserRole.MODERATOR]),
+  requireRole([UserRole.ADMIN]),
   getCaseAllocations,
 );
 
