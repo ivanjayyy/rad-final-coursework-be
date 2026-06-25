@@ -6,7 +6,7 @@ import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import postRoutes from "./routes/postRoutes";
 import mailRoutes from "./routes/mailRoutes";
-import adminRoutes from "./routes/adminRoutes"
+import adminRoutes from "./routes/adminRoutes";
 
 dotenv.config();
 const app = express();
@@ -17,14 +17,20 @@ const MONGO_URL = process.env.MONGO_URL || "";
 
 // Global middleware
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 // Routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/post", postRoutes);
 app.use("/api/v1/mail", mailRoutes);
-app.use("/api/v1/admin", adminRoutes)
+app.use("/api/v1/admin", adminRoutes);
 
 // Connect to MongoDB
 mongoose

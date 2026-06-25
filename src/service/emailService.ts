@@ -35,21 +35,18 @@ export const sendWelcomeEmail = async (
     html: `
       <div style="font-family: 'Courier New', Courier, monospace, sans-serif; max-width: 480px; margin: 30px auto; padding: 36px 32px; background-color: #c084fc; border: 5px solid #000000; box-shadow: 12px 12px 0px 0px #000000, 16px 16px 20px rgba(0,0,0,0.15); border-radius: 4px;">
         
-        {/* Header Banner */}
         <div style="background-color: #fef08a; border: 4px solid #000000; padding: 18px; margin-bottom: 32px; text-align: center; box-shadow: 4px 4px 0px #000000, 8px 8px 0px #000000; transform: rotate(-1deg); -webkit-transform: rotate(-1deg); -moz-transform: rotate(-1deg);">
           <h2 style="color: #000000; margin: 0; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; text-shadow: 2px 2px 0px #ffffff, 4px 4px 0px rgba(0,0,0,0.15);">
             💥 JOINED THE PACK! 💥
           </h2>
         </div>
 
-        {/* Username Tag */}
         <div style="background-color: #22d3ee; border: 3px solid #000000; padding: 8px 16px; display: inline-block; margin-bottom: 24px; box-shadow: 4px 4px 0px #000000; transform: rotate(1.5deg); -webkit-transform: rotate(1.5deg); -moz-transform: rotate(1.5deg);">
           <span style="color: #000000; font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
             📡 HANDLER: @${username || "NEW_HERO"}
           </span>
         </div>
 
-        {/* Main Content Box */}
         <div style="background-color: #ffffff; border: 3px solid #000000; padding: 20px; margin-bottom: 32px; box-shadow: 6px 6px 0px #000000;">
           <h3 style="color: #000000; margin: 0 0 12px 0; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">
             ⚡ PET RADAR IS NOW ONLINE
@@ -59,16 +56,14 @@ export const sendWelcomeEmail = async (
           </p>
         </div>
 
-        {/* Call to Action Button */}
         <div style="text-align: center; margin-bottom: 36px; transform: scale(1.02); -webkit-transform: scale(1.02); -moz-transform: scale(1.02);">
-          <a href="${process.env.FRONTEND_URL || "http://localhost:5173"}" style="text-decoration: none; display: inline-block;">
+          <a href="${process.env.FRONTEND_URL || "https://pawlink-flame.vercel.app"}" style="text-decoration: none; display: inline-block;">
             <span style="font-family: 'Courier New', Courier, monospace; font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #ffffff; background-color: #000000; padding: 14px 28px; border: 3px solid #ffffff; box-shadow: 4px 4px 0px #22d3ee, 8px 8px 0px #000000; transition: all 0.2s;">
               LAUNCH RADAR 🐾
             </span>
           </a>
         </div>
 
-        {/* Footer Note */}
         <div style="border-top: 4px dashed #000000; padding-top: 20px; text-align: center;">
           <p style="color: #000000; font-size: 11px; font-weight: 900; margin: 0; text-transform: uppercase; background-color: rgba(255,255,255,0.4); padding: 8px; border: 2px dashed #000000;">
             * PREPARE FOR DISPATCH. THANK YOU FOR HELPING US PROTECT THE COMMUNITY. *

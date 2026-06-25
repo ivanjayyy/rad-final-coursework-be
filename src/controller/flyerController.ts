@@ -7,6 +7,7 @@ import { AuthRequest } from "../middleware/auth";
 export const getFlyerRoute = async (req: AuthRequest, res: Response) => {
   try {
     const postId = req.params.id;
+    console.log("Post ID:", postId);
 
     const post = await PostModel.findById(postId);
 

@@ -7,7 +7,8 @@ export async function validateImage(
   next: NextFunction,
 ) {
   if (!req.file) {
-    return res.status(400).json({ error: "No image provided." });
+    // return res.status(400).json({ error: "No image provided." });
+    return next();
   }
 
   try {

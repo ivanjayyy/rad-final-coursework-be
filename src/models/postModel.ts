@@ -9,15 +9,15 @@ export enum PostStatus {
 // Post interface
 export interface IPost extends Document {
   status: PostStatus;
-  petName: string;
-  breed?: string;
+  petName?: string;
+  breed: string;
   color: string;
   lastSeenLocation: string;
   lastSeenDate: string;
   reward?: string;
   contactPhone: string[];
   contactEmail?: string[];
-  imageURL?: string;
+  imageURL: string;
   author: mongoose.Types.ObjectId;
   bookmark?: mongoose.Types.ObjectId[];
   createdAt?: Date;
@@ -32,15 +32,15 @@ const postSchema = new mongoose.Schema<IPost>(
       enum: Object.values(PostStatus),
       required: true,
     },
-    petName: { type: String, required: true },
-    breed: { type: String },
+    petName: { type: String },
+    breed: { type: String, required: true },
     color: { type: String, required: true },
     lastSeenLocation: { type: String, required: true },
     lastSeenDate: { type: String, required: true },
     reward: { type: String },
     contactPhone: { type: [String], required: true },
     contactEmail: { type: [String] },
-    imageURL: { type: String },
+    imageURL: { type: String, required: true },
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

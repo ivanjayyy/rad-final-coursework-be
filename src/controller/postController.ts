@@ -3,6 +3,7 @@ import cloudinary from "../config/cloudinary";
 import { AuthRequest } from "../middleware/auth";
 import { PostModel } from "../models/postModel";
 import { BookmarkModel } from "../models/boomarkModel";
+import { error } from "node:console";
 
 // Create post
 export const createPost = async (req: AuthRequest, res: Response) => {
@@ -36,6 +37,11 @@ export const createPost = async (req: AuthRequest, res: Response) => {
         upload_stream.end(req.file?.buffer);
       });
       imageURL = result.secure_url;
+    } else {
+      return res.status(400).json({
+        error: "No image provided.",
+        reason: "A valid image is required",
+      });
     }
 
     const newPost = new PostModel({
@@ -59,7 +65,7 @@ export const createPost = async (req: AuthRequest, res: Response) => {
       .status(201)
       .json({ message: "Post created successfully", data: savedPost });
   } catch (error) {
-    res.status(500).json({ message: "Error creating post", error });
+    res.status(500).json({ reason: "Error creating post", error });
   }
 };
 
@@ -153,11 +159,11 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
 
     const post = await PostModel.findById(postId);
     if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+      return res.status(404).json({ reason: "Post not found" });
     }
 
     if (post.author.toString() !== userId) {
-      return res.status(401).json({ message: "Unauthorized access" });
+      return res.status(401).json({ reason: "Unauthorized access" });
     }
 
     // Upload image
@@ -177,6 +183,8 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
         upload_stream.end(req.file?.buffer);
       });
       imageURL = result.secure_url;
+    } else {
+      imageURL = post.imageURL?.toString();
     }
 
     const updatedPost = await PostModel.findByIdAndUpdate(
@@ -201,7 +209,7 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
       .status(200)
       .json({ message: "Post updated successfully", data: updatedPost });
   } catch (error) {
-    res.status(500).json({ message: "Error updating post", error: error });
+    res.status(500).json({ reason: "Error updating post", error: error });
   }
 };
 

@@ -32,8 +32,8 @@ authRoutes.post("/refresh", refreshToken);
 // POST /api/v1/auth/reset-password
 authRoutes.post(
   "/reset-password",
-  authenticate,
-  requireRole([UserRole.USER, UserRole.MODERATOR]),
+  // authenticate,
+  // requireRole([UserRole.USER, UserRole.MODERATOR]),
   resetPassword,
 );
 
